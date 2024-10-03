@@ -1,45 +1,85 @@
 import java.util.*;
 
 public class p9 {
-    public static void main(String[] args) {
-        Map<Character, List<Character>> graph = new HashMap<>();
-        graph.put('A', Arrays.asList('B'));
-        graph.put('B', Arrays.asList('C', 'D'));
-        graph.put('C', Arrays.asList());
-        graph.put('D', Arrays.asList('F'));
-        graph.put('F', Arrays.asList('A'));
 
-        char start = 'F';
-        char end = 'A';
-        List<Character> path = new ArrayList<>();
-        boolean result = pathExists(graph, start, end, path);
-        System.out.println("Path exists: " + result);
-        if (result) {
-            System.out.println("Path: " + path);
-        }
-    }
+    // Method to find the path between start and end node in a directed graph
+    public static List<String> findPath(Map<String, List<String>> graph, String start, String end) {
+        // Queue for BFS and a map to track the predecessors for path reconstruction
+        Queue<String> queue = new LinkedList<>();
+        Map<String, String> predecessors = new HashMap<>();
+        queue.add(start);
+        predecessors.put(start, null); // Start node has no predecessor
 
-    // Method to check if a path exists between two nodes
-    public static boolean pathExists(Map<Character, List<Character>> graph, char start, char end, List<Character> path) {
-        Set<Character> visited = new HashSet<>();
-        return dfs(graph, start, end, path, visited);
-    }
+        // Perform BFS to find the path
+        while (!queue.isEmpty()) {
+            String node = queue.poll();
 
-    // Depth-First Search (DFS) to find path
-    private static boolean dfs(Map<Character, List<Character>> graph, char start, char end, List<Character> path, Set<Character> visited) {
-        visited.add(start);
-        path.add(start);
+            // If we reach the end node, reconstruct the path
+            if (node.equals(end)) {
+                return buildPath(predecessors, start, end);
+            }
 
-        if (start == end) {
-            return true;
-        }
-
-        for (char neighbor : graph.getOrDefault(start, new ArrayList<>())) {
-            if (!visited.contains(neighbor) && dfs(graph, neighbor, end, path, visited)) {
-                return true;
+            // Explore all neighbors
+            if (graph.containsKey(node)) {
+                for (String neighbor : graph.get(node)) {
+                    if (!predecessors.containsKey(neighbor)) { // Not visited
+                        queue.add(neighbor);
+                        predecessors.put(neighbor, node);
+                    }
+                }
             }
         }
-        path.remove(path.size() - 1); // Backtrack
-        return false;
+
+        // If no path found
+        return null;
+    }
+
+    // Method to build the path from start to end using the predecessors map
+    private static List<String> buildPath(Map<String, String> predecessors, String start, String end) {
+        List<String> path = new LinkedList<>();
+        for (String at = end; at != null; at = predecessors.get(at)) {
+            path.add(at);
+        }
+        Collections.reverse(path); // Reverse to get the path from start to end
+        return path;
+    }
+
+    // Method to check if the path exists and print the path
+    public static void pathExists(Map<String, List<String>> graph, String start, String end) {
+        List<String> path = findPath(graph, start, end);
+        if (path == null || path.size() == 1) { // No path or path is just the start node
+            System.out.println("False");
+        } else {
+            System.out.println("True (" + String.join(" --> ", path) + ")");
+        }
+    }
+
+    // Main method to test the solution
+    public static void main(String[] args) {
+        // Define the graph
+        Map<String, List<String>> graph = new HashMap<>();
+        graph.put("A", Arrays.asList("B"));
+        graph.put("B", Arrays.asList("A", "C", "D"));
+        graph.put("C", Arrays.asList());
+        graph.put("D", Arrays.asList("E", "G"));
+        graph.put("E", Arrays.asList("F"));
+        graph.put("F", Arrays.asList("B"));
+        graph.put("G", Arrays.asList());
+
+        // Example 1
+        System.out.print("Input: Start = D, End = B\nExpected output: ");
+        pathExists(graph, "D", "B"); // Expected output: False
+
+        // Example 2
+        System.out.print("\nInput: Start = F, End = A\nExpected output: ");
+        pathExists(graph, "F", "A"); // Expected output: True (F --> B --> A)
+
+        // Example 3
+        System.out.print("\nInput: Start = G, End = C\nExpected output: ");
+        pathExists(graph, "G", "C"); // Expected output: False
+
+        // Example 4
+        System.out.print("\nInput: Start = E, End = D\nExpected output: ");
+        pathExists(graph, "E", "D"); // Expected output: True (E --> F --> B --> D)
     }
 }
