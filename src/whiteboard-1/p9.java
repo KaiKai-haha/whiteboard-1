@@ -68,18 +68,18 @@ public class p9 {
 
         // Example 1
         System.out.print("Input: Start = D, End = B\nExpected output: ");
-        pathExists(graph, "D", "B"); // Expected output: False
+        pathExists(graph, "D", "B");
 
         // Example 2
         System.out.print("\nInput: Start = F, End = A\nExpected output: ");
-        pathExists(graph, "F", "A"); // Expected output: True (F --> B --> A)
+        pathExists(graph, "F", "A");
 
         // Example 3
         System.out.print("\nInput: Start = G, End = C\nExpected output: ");
-        pathExists(graph, "G", "C"); // Expected output: False
+        pathExists(graph, "G", "C");
 
         // Example 4
         System.out.print("\nInput: Start = E, End = D\nExpected output: ");
-        pathExists(graph, "E", "D"); // Expected output: True (E --> F --> B --> D)
+        pathExists(graph, "E", "D");
     }
 }
